@@ -23,6 +23,8 @@
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
         }
 
         .container {
@@ -34,7 +36,7 @@
             width: 100%;
             text-align: center;
             position: relative;
-            overflow: hidden;
+            z-index: 1;
         }
 
         h1 {
@@ -80,8 +82,8 @@
             margin-top: 25px;
             display: flex;
             justify-content: center;
+            align-items: center;
             gap: 15px;
-            position: relative;
             min-height: 50px;
         }
 
@@ -110,9 +112,11 @@
             background-color: #747d8c;
         }
 
+        /* Fixed runaway button behavior */
         #runaway-btn {
-            position: absolute;
+            position: relative;
             transition: all 0.2s ease;
+            z-index: 999;
         }
 
         .heart {
@@ -156,11 +160,11 @@
     <!-- Step 2 -->
     <div class="step" id="step2">
         <h1>Question 1 of 3</h1>
-        <p>Who is the rightful owner of my favorite oversized hoodies?</p>
+        <p>Regarding the socks you left at my apartment during your last visit...</p>
         <div class="btn-group" style="flex-direction: column;">
-            <button onclick="nextStep(3)">You (borrowed temporarily... forever)</button>
-            <button onclick="nextStep(3)">Me (delusional answer)</button>
-            <button onclick="nextStep(3)">They look better on you anyway</button>
+            <button onclick="nextStep(3)">They are officially my property now (Finders Keepers Act)</button>
+            <button onclick="nextStep(3)">They are holding hostage until your next visit</button>
+            <button onclick="nextStep(3)">I will wear them and there is nothing you can do</button>
         </div>
     </div>
 
@@ -178,10 +182,10 @@
     <!-- Step 4 -->
     <div class="step" id="step4">
         <h1>Final Evaluation</h1>
-        <p>Are you available for mandatory cuddles and a movie marathon later?</p>
-        <div class="btn-group" id="final-btn-group">
+        <p>Are you available for mandatory cuddles and infinite kisses later?</p>
+        <div class="btn-group" id="final-btn-group" style="flex-direction: row;">
             <button onclick="nextStep(5)">Yes, absolutely!</button>
-            <button id="runaway-btn" class="btn-secondary" onmouseover="moveButton()" onclick="moveButton()">No</button>
+            <button id="runaway-btn" class="btn-secondary" onmouseenter="moveButton()" onclick="moveButton()">No</button>
         </div>
     </div>
 
@@ -192,7 +196,7 @@
         <p><strong>Status:</strong> Approved with honors.</p>
         <p>Findings show you are officially the best girlfriend ever. No further action required, except being cute.</p>
         <ul>
-            <li>Hoodie privileges: Granted indefinitely</li>
+            <li>Socks claim: Approved & Non-refundable</li>
             <li>Blanket rights: Negotiable</li>
             <li>Complaints department: Closed forever</li>
         </ul>
@@ -212,13 +216,19 @@
 
     function moveButton() {
         const btn = document.getElementById('runaway-btn');
-        const container = document.querySelector('.container');
         
-        // Calculate bounds so button stays roughly within visible container area
-        const x = Math.random() * (container.clientWidth - 100) - (container.clientWidth / 2 - 50);
-        const y = Math.random() * (container.clientHeight - 80) - (container.clientHeight / 2 - 40);
+        // Change position to fixed so it can escape anywhere on the entire screen
+        btn.style.position = 'fixed';
 
-        btn.style.transform = `translate(${x}px, ${y}px)`;
+        const padding = 50;
+        const maxX = window.innerWidth - btn.offsetWidth - padding;
+        const maxY = window.innerHeight - btn.offsetHeight - padding;
+
+        const newX = Math.max(padding, Math.floor(Math.random() * maxX));
+        const newY = Math.max(padding, Math.floor(Math.random() * maxY));
+
+        btn.style.left = newX + 'px';
+        btn.style.top = newY + 'px';
     }
 </script>
 
