@@ -97,6 +97,7 @@
             font-weight: bold;
             cursor: pointer;
             transition: transform 0.2s, background-color 0.2s;
+            touch-action: manipulation;
         }
 
         button:hover {
@@ -112,10 +113,9 @@
             background-color: #747d8c;
         }
 
-        /* Fixed runaway button behavior */
         #runaway-btn {
             position: relative;
-            transition: all 0.2s ease;
+            transition: left 0.2s ease, top 0.2s ease, transform 0.2s ease;
             z-index: 999;
         }
 
@@ -163,7 +163,7 @@
         <p>Regarding the socks you left at my apartment during your last visit...</p>
         <div class="btn-group" style="flex-direction: column;">
             <button onclick="nextStep(3)">They are officially my property now (Finders Keepers Act)</button>
-            <button onclick="nextStep(3)">They are holding hostage until your next visit</button>
+            <button onclick="nextStep(3)">They are being held hostage until your next visit</button>
             <button onclick="nextStep(3)">I will wear them and there is nothing you can do</button>
         </div>
     </div>
@@ -185,7 +185,7 @@
         <p>Are you available for mandatory cuddles and infinite kisses later?</p>
         <div class="btn-group" id="final-btn-group" style="flex-direction: row;">
             <button onclick="nextStep(5)">Yes, absolutely!</button>
-            <button id="runaway-btn" class="btn-secondary" onmouseenter="moveButton()" onclick="moveButton()">No</button>
+            <button id="runaway-btn" class="btn-secondary">No</button>
         </div>
     </div>
 
@@ -214,22 +214,44 @@
         document.getElementById('step' + stepNumber).classList.add('active');
     }
 
-    function moveButton() {
-        const btn = document.getElementById('runaway-btn');
-        
-        // Change position to fixed so it can escape anywhere on the entire screen
-        btn.style.position = 'fixed';
+    const runawayBtn = document.getElementById('runaway-btn');
+    let scale = 1;
 
-        const padding = 50;
-        const maxX = window.innerWidth - btn.offsetWidth - padding;
-        const maxY = window.innerHeight - btn.offsetHeight - padding;
+    function dodgeButton(e) {
+        if (e && e.cancelable) e.preventDefault();
+
+        runawayBtn.style.position = 'fixed';
+
+        const padding = 30;
+        const maxX = window.innerWidth - runawayBtn.offsetWidth - padding;
+        const maxY = window.innerHeight - runawayBtn.offsetHeight - padding;
 
         const newX = Math.max(padding, Math.floor(Math.random() * maxX));
         const newY = Math.max(padding, Math.floor(Math.random() * maxY));
 
-        btn.style.left = newX + 'px';
-        btn.style.top = newY + 'px';
+        scale = Math.max(0.4, scale - 0.15);
+
+        runawayBtn.style.left = newX + 'px';
+        runawayBtn.style.top = newY + 'px';
+        runawayBtn.style.transform = `scale(${scale})`;
+
+        if (scale <= 0.4) {
+            runawayBtn.innerText = "Yes! 💕";
+            runawayBtn.classList.remove('btn-secondary');
+            runawayBtn.onclick = () => nextStep(5);
+        }
     }
+
+    // Desktop Mouse Events
+    runawayBtn.addEventListener('mouseenter', dodgeButton);
+
+    // Mobile & Touch Events
+    runawayBtn.addEventListener('touchstart', dodgeButton, { passive: false });
+    runawayBtn.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'touch') {
+            dodgeButton(e);
+        }
+    });
 </script>
 
 </body>
